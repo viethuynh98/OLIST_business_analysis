@@ -28,3 +28,22 @@ from (
     having count(*) > 1 
     -- order by a desc
 ) as temp_1;
+select count(*)
+from geolocation;
+-- *** xoá các bản ghi lặp hoàn toàn trong geolocation 1,000,163 -> 738,332 
+WITH
+    CTE
+    AS
+    (
+        SELECT
+            *,
+            ROW_NUMBER() OVER (PARTITION BY geolocation_zip_code_prefix, geolocation_lat, geolocation_lng, geolocation_city, geolocation_state ORDER BY (SELECT NULL)) AS rn
+        FROM
+            geolocation
+    )
+DELETE FROM CTE WHERE rn > 1;
+select count(*)
+from geolocation;
+select top 3
+    *
+from geolocation;
