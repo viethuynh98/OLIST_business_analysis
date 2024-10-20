@@ -71,3 +71,26 @@ with
     )
 -- select count(*) from CTE
 -- select * from CTE
+delete from geolocation where geolocation_zip_code_prefix not in (select *
+from CTE);
+-- xoá các địa điểm ngoài brazil -- 712485 -- distinct zip_code 14915
+delete from geolocation where geolocation_lat > 10 or geolocation_lng > -30
+delete from geolocation where geolocation_lat < -34
+select count(*)
+from geolocation;
+select count(distinct geolocation_zip_code_prefix)
+from geolocation;
+
+--
+select *
+from geolocation
+WHERE geolocation_lat < 10 and geolocation_lat < -34
+select *
+from geolocation
+where geolocation_lng between -33 and -30
+select *
+from geolocation
+where geolocation_city = 'santa rosa'
+select *
+from geolocation
+where geolocation_lat  < -34
