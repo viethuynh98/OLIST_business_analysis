@@ -94,3 +94,28 @@ where geolocation_city = 'santa rosa'
 select *
 from geolocation
 where geolocation_lat  < -34
+
+-- gom nhóm zip_code, tính average lat-long, cập nhật giá trị cho các bản ghi
+WITH
+    AvgGeo
+    AS
+    (
+        SELECT
+            geolocation_zip_code_prefix,
+            AVG(geolocation_lat) AS avg_lat,
+            AVG(geolocation_lng) AS avg_lng
+        FROM geolocation
+        GROUP BY geolocation_zip_code_prefix
+    )
+
+UPDATE geolocation
+SET
+    geolocation_lat = AvgGeo.avg_lat,
+    geolocation_lng = AvgGeo.avg_lng
+FROM geolocation
+    JOIN AvgGeo
+    ON geolocation.geolocation_zip_code_prefix = AvgGeo.geolocation_zip_code_prefix;
+
+select *
+from geolocation
+order by geolocation_zip_code_prefix
