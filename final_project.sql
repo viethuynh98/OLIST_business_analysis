@@ -28,6 +28,8 @@ from (
     having count(*) > 1 
     -- order by a desc
 ) as temp_1;
+
+--_________________________GEOLOCATION________________________________
 select count(*)
 from geolocation;
 -- *** xoá các bản ghi lặp hoàn toàn trong geolocation 1,000,163 -> 738,332 
@@ -47,3 +49,25 @@ from geolocation;
 select top 3
     *
 from geolocation;
+
+-- loại bỏ những location không có trong customers và sellers -- 712506
+with
+    CTE
+    as
+    (
+                    select
+                distinct customer_zip_code_prefix
+            from customers
+        UNION
+            select
+                distinct seller_zip_code_prefix
+            from sellers
+    ),
+    CTE2
+    as
+    (
+        select distinct geolocation_zip_code_prefix
+        from geolocation
+    )
+-- select count(*) from CTE
+-- select * from CTE
