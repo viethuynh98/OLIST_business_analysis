@@ -395,3 +395,164 @@ select *
 from sellers
 select *
 from geolocation;
+
+
+--________________________________________________________
+WITH
+    CTE
+    AS
+    (
+        SELECT
+            *,
+            ROW_NUMBER() OVER (PARTITION BY customer_unique_id, customer_city ORDER BY (SELECT NULL)) AS rn
+        FROM
+            customers
+    )
+select *
+from CTE
+-- group by customer_unique_id
+-- order by rn desc
+order by customer_unique_id
+
+select count(*)
+from order_reviews
+where review_score = 1
+select count(*)
+from order_reviews
+where review_score = 2
+select count(*)
+from order_reviews
+where review_score = 3
+select count(*)
+from order_reviews
+where review_score = 4
+select count(*)
+from order_reviews
+where review_score = 5;
+
+SELECT
+    count(distinct shipped_carrier_status)
+from temp
+GROUP by order_id
+having count(distinct shipped_carrier_status) > 1
+
+select count(*)
+from (
+select count(*) as a
+    from temp
+    group by order_id
+    having count(*) > 1
+) as temp1
+
+select count(*)
+from temp
+where order_item_id > 1
+
+select *
+from geolocation
+where geolocation_zip_code_prefix = '20040';
+
+select
+    product_with_review.*,
+    product_category_name_translation.*,
+    sellers.seller_id
+from product_with_review
+    join orders on product_with_review.order_id = orders.order_id
+    join order_items on orders.order_id = order_items.order_id
+    join products on products.product_id = order_items.product_id
+    join product_category_name_translation on products.product_category_name = product_category_name_translation.column1
+    join sellers on order_items.seller_id = sellers.seller_id
+;
+--  Product delivered with precision, thank you for your attention 
+with
+    CTE
+    as
+    (
+        select review_id
+        from order_reviews
+        group by review_id
+        having count(review_id) > 1
+    )
+select orders.order_status, order_reviews.*  from order_reviews
+join orders on orders.order_id = order_reviews.order_id
+where review_id in (select * from CTE)
+order by review_id
+
+
+-- 1 customer, mua 1 sản phẩm 3 lần từ 1 seller (3 đơn như nhau), theo trạng thái thì đã nhận cả 3 nhưng theo review thì thiếu 1 sp <=> 1 đơn không có sản phẩm (review 5*)
+-- có khả năng các review được đánh dấu theo order_unique_id, vì 1 số đơn đã được cancel nhưng vẫn được đánh giá.
+-- 1 order có thể có nhiều review nhưng mỗi review là unique, không thể 1 reivew mà áp dụng cho nhiều order_id được.
+select 
+    * 
+from customers
+where customer_id in ('9962a28bb74e0754415433c3ddc14b2f', 'e6138dce24962a66623898c89db41ef7', 'e17387227a12c3cac59fc44523d162e5')
+
+
+select 
+    * 
+from customers
+where customer_id in ('6e9f7d9e943f9c0bdea278d9d7a1c9b9', 'f32ab95a50b915c9ae8036374fe02e21', '458c071cf2f55e076014cb868bff55fe')
+
+-- with
+--     CTE
+--     as
+--     (
+--         select review_id
+--         from cleaned_order_reviews
+--         group by review_id
+--         having count(review_id) > 1
+--     )
+-- select orders.order_status, cleaned_order_reviews.*  from cleaned_order_reviews
+-- join orders on orders.order_id = cleaned_order_reviews.order_id
+-- where review_id in (select * from CTE)
+-- order by review_id
+
+
+-- -- 789 review bị lặp 1-2 lần.
+-- WITH
+--     CTE
+--     AS
+--     (
+--         SELECT
+--             *,
+--             ROW_NUMBER() OVER (PARTITION BY review_id, review_score, review_comment_title, review_comment_message  ORDER BY (select null)) AS rn
+--         from (select * from cleaned_order_reviews where review_comment_message is not null) as temp1
+--     )
+-- select * from CTE where rn = 2
+
+-- --
+-- WITH
+--     CTE
+--     AS
+--     (
+--         SELECT
+--             *,
+--             ROW_NUMBER() OVER (PARTITION BY order_id ORDER BY (order_id)) AS rn
+--         from cleaned_order_reviews
+--     )
+-- select * from CTE where rn > 1
+
+-- select count(*) from cleaned_order_reviews
+-- select count(*) from order_reviews;
+
+-- with CTE as 
+-- (
+-- select order_id
+-- from cleaned_order_reviews
+-- group by order_id
+-- having count(order_id) > 1
+-- )
+-- select * from cleaned_order_reviews where order_id in (select * from CTE)
+-- order by order_id
+
+select count(*) from cleaned_order_reviews where review_comment_message_en is not null or review_comment_title_en is not null
+
+select
+     *
+from products as pr
+left join product_category_name_translation prc
+    on pr.product_category_name = prc.column1
+-- where prc.column2 is null
+where pr.product_weight_g = 1200
+    and pr.product_length_cm = 25
+    and pr.product_height_cm = 33
