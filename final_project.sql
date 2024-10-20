@@ -119,3 +119,37 @@ FROM geolocation
 select *
 from geolocation
 order by geolocation_zip_code_prefix
+-- xoá các bản ghi trùng lặp * cột -- 22653
+WITH
+    CTE
+    AS
+    (
+        SELECT
+            *,
+            ROW_NUMBER() OVER (PARTITION BY geolocation_zip_code_prefix, geolocation_lat, geolocation_lng, geolocation_city, geolocation_state ORDER BY (SELECT NULL)) AS rn
+        FROM
+            geolocation
+    )
+DELETE FROM CTE WHERE rn > 1;
+select count(*)
+from geolocation;
+select top 3
+    *
+from geolocation;
+-- xoá các bản ghi trùng lặp only zip_code -- 14915
+WITH
+    CTE
+    AS
+    (
+        SELECT
+            *,
+            ROW_NUMBER() OVER (PARTITION BY geolocation_zip_code_prefix ORDER BY (SELECT NULL)) AS rn
+        FROM
+            geolocation
+    )
+DELETE FROM CTE WHERE rn > 1;
+select count(*)
+from geolocation;
+select top 3
+    *
+from geolocation;
