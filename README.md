@@ -10,7 +10,7 @@ The OLIST dataset includes information about e-commerce transactions in Brazil. 
 - Power BI Dashboards: Dashboards to visualize key business insights, customer sentiment, and issues identified in customer reviews.
 ## Dataset Cleaning
 1. Geolocation Data
-  The geolocation table in the OLIST dataset contains latitude and longitude data for various locations in Brazil. However, some records have coordinates that are outside of Brazil but match valid Brazilian ZIP codes. This seems to be an error, possibly due to data entry mistakes.
+- The geolocation table in the OLIST dataset contains latitude and longitude data for various locations in Brazil. However, some records have coordinates that are outside of Brazil but match valid Brazilian ZIP codes. This seems to be an error, possibly due to data entry mistakes.
 
   Steps Taken:
 - Identified and removed records with invalid latitude and longitude data that were outside of Brazil, but still had matching Brazilian ZIP codes.
@@ -20,10 +20,10 @@ The OLIST dataset includes information about e-commerce transactions in Brazil. 
 2. Customer and Seller Geolocation
 Some customer and seller records were missing geolocation data or were not present in the dataset due to potential typos in names or ZIP codes. To resolve this:
 
-Filled missing geolocation data for customers and sellers by cross-referencing available data.
-Handled incorrect or inconsistent data, ensuring all active customers and sellers had valid geolocation entries.
+- Filled missing geolocation data for customers and sellers by cross-referencing available data.
+- Handled incorrect or inconsistent data, ensuring all active customers and sellers had valid geolocation entries.
 3. Review Translation
-The reviews in the OLIST dataset were written in various languages. Since the primary language in Brazil is Portuguese, I used Google Translate to automatically translate reviews from Spanish and other languages into Portuguese. After translation:
+- The reviews in the OLIST dataset were written in various languages. Since the primary language in Brazil is Portuguese, I used Google Translate to automatically translate reviews to English. After translation:
 
 Used Python scripts to clean special characters and ensure the reviews were properly formatted for analysis.
 
