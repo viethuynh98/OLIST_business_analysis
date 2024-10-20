@@ -55,7 +55,7 @@ with
     CTE
     as
     (
-                    select
+            select
                 distinct customer_zip_code_prefix
             from customers
         UNION
@@ -473,23 +473,25 @@ with
         group by review_id
         having count(review_id) > 1
     )
-select orders.order_status, order_reviews.*  from order_reviews
-join orders on orders.order_id = order_reviews.order_id
-where review_id in (select * from CTE)
+select orders.order_status, order_reviews.*
+from order_reviews
+    join orders on orders.order_id = order_reviews.order_id
+where review_id in (select *
+from CTE)
 order by review_id
 
 
 -- 1 customer, mua 1 sản phẩm 3 lần từ 1 seller (3 đơn như nhau), theo trạng thái thì đã nhận cả 3 nhưng theo review thì thiếu 1 sp <=> 1 đơn không có sản phẩm (review 5*)
 -- có khả năng các review được đánh dấu theo order_unique_id, vì 1 số đơn đã được cancel nhưng vẫn được đánh giá.
 -- 1 order có thể có nhiều review nhưng mỗi review là unique, không thể 1 reivew mà áp dụng cho nhiều order_id được.
-select 
-    * 
+select
+    *
 from customers
 where customer_id in ('9962a28bb74e0754415433c3ddc14b2f', 'e6138dce24962a66623898c89db41ef7', 'e17387227a12c3cac59fc44523d162e5')
 
 
-select 
-    * 
+select
+    *
 from customers
 where customer_id in ('6e9f7d9e943f9c0bdea278d9d7a1c9b9', 'f32ab95a50b915c9ae8036374fe02e21', '458c071cf2f55e076014cb868bff55fe')
 
@@ -545,12 +547,14 @@ where customer_id in ('6e9f7d9e943f9c0bdea278d9d7a1c9b9', 'f32ab95a50b915c9ae803
 -- select * from cleaned_order_reviews where order_id in (select * from CTE)
 -- order by order_id
 
-select count(*) from cleaned_order_reviews where review_comment_message_en is not null or review_comment_title_en is not null
+select count(*)
+from cleaned_order_reviews
+where review_comment_message_en is not null or review_comment_title_en is not null
 
 select
-     *
+    *
 from products as pr
-left join product_category_name_translation prc
+    left join product_category_name_translation prc
     on pr.product_category_name = prc.column1
 -- where prc.column2 is null
 where pr.product_weight_g = 1200
